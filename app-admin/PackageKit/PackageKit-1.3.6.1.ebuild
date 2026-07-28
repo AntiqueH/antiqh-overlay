@@ -21,16 +21,28 @@ fi
 
 LICENSE="GPL-2+"
 SLOT="0"
-IUSE="introspection policykit bash-completion gtk-doc systemd test vala"
+IUSE="+qmerge-backend portage-backend introspection policykit bash-completion gtk-doc systemd test vala"
 
 RESTRICT="!test? ( test )"
 
-REQUIRED_USE="vala? ( introspection )"
+REQUIRED_USE="
+	^^ ( qmerge-backend portage-backend )
+	vala? ( introspection )
+"
 
+# we recommend our portage-utils from app-portage
 RDEPEND="
 	dev-libs/glib:2
 	dev-db/sqlite:3
-	sys-apps/portage
+	qmerge-backend? (
+		app-portage/portage-utils
+		app-arch/libarchive:=
+		app-crypt/gpgme:=
+		app-crypt/libb2:=
+		net-misc/curl:=
+		virtual/zlib:=
+	)
+	portage-backend? ( sys-apps/portage )
 	policykit? ( sys-auth/polkit )
 	introspection? ( dev-libs/gobject-introspection )
 	bash-completion? ( app-shells/bash-completion )
@@ -44,12 +56,10 @@ BDEPEND="${PYTHON_DEPS}
 
 src_configure() {
 	local emesonargs=(
-		-Dpackaging_backend=portage
+		-Dpackaging_backend=$(usex qmerge-backend qmerge portage)
 		-Dgstreamer_plugin=false
 		-Dgtk_module=false
 		-Dgtk_doc=$(usex gtk-doc true false)
-		-Dcron=$(usex cron true false)
-		-Dlegacy_tools=$(usex legacy true false)
 		-Dsystemd=$(usex systemd true false)
 		-Dgobject_introspection=$(usex introspection true false)
 		-Ddaemon_tests=$(usex test true false)

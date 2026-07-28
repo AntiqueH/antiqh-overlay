@@ -5,6 +5,10 @@
 		<email>antiq.hofer@gmail.com</email>
 		<name>Jaeger H.</name>
 	</maintainer>
+	<use>
+		<flag name="qmerge-backend">Build the native qmerge backend consuming Gentoo binary packages from a binhost</flag>
+		<flag name="portage-backend">Build the spawned Python backend driving sys-apps/portage</flag>
+	</use>
 	<upstream>
 		<remote-id type="github">AntiqueH/PackageKit</remote-id>
 	</upstream>
