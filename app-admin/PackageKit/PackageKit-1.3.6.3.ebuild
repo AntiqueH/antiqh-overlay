@@ -75,5 +75,11 @@ src_install() {
 		dosym "vaapigen-${PV}" /usr/bin/vaapigen
 	fi
 
+	if use portage-backend; then
+		python_optimize
+	else
+		rm -r "${ED}"/usr/lib/python*/site-packages/packagekit || die
+	fi
+
 	dodoc README.md AUTHORS NEWS
 }

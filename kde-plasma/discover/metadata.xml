@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>antiq.hofer@gmail.com</email>
+		<name>Jaeger H.</name>
+	</maintainer>
+	<use>
+		<flag name="packagekit">Build the PackageKit backend for use with the app-admin/PackageKit qmerge daemon</flag>
+		<flag name="firmware">Enable the fwupd firmware updates backend</flag>
+		<flag name="flatpak">Enable the flatpak application backend</flag>
+		<flag name="snap">Enable the snap application backend</flag>
+		<flag name="webengine">Use dev-qt/qtwebview to display extra content</flag>
+	</use>
+	<upstream>
+		<remote-id type="kde-invent">plasma/discover</remote-id>
+	</upstream>
+</pkgmetadata>
