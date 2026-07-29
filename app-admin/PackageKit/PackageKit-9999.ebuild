@@ -3,9 +3,7 @@
 
 EAPI=8
 
-PYTHON_COMPAT=( python3_{11..15} )
-
-inherit meson python-any-r1 xdg
+inherit meson xdg
 
 DESCRIPTION="A system designed to make installation and updates of packages easier"
 HOMEPAGE="https://github.com/AntiqueH/PackageKit"
@@ -48,7 +46,7 @@ RDEPEND="
 	bash-completion? ( app-shells/bash-completion )
 "
 DEPEND="${RDEPEND}"
-BDEPEND="${PYTHON_DEPS}
+BDEPEND+="
 	virtual/pkgconfig
 	dev-util/intltool
 	introspection? ( dev-lang/vala )
@@ -62,6 +60,7 @@ src_configure() {
 		-Dgtk_doc=$(usex gtk-doc true false)
 		-Dsystemd=$(usex systemd true false)
 		-Dgobject_introspection=$(usex introspection true false)
+		-Dbash_completion=$(usex bash-completion true false)
 		-Ddaemon_tests=$(usex test true false)
 	)
 
@@ -75,9 +74,7 @@ src_install() {
 		dosym "vaapigen-${PV}" /usr/bin/vaapigen
 	fi
 
-	if use portage-backend; then
-		python_optimize
-	else
+	if ! use portage-backend; then
 		rm -r "${ED}"/usr/lib/python*/site-packages/packagekit || die
 	fi
 
