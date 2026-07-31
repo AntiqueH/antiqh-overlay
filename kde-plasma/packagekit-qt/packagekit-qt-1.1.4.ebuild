@@ -19,14 +19,10 @@ fi
 
 LICENSE="LGPL-2.1+"
 SLOT="6"
-IUSE="qt5 +qt6 test"
+IUSE="+qt6 test"
 
 DEPEND="
 	app-admin/PackageKit
-	qt5? (
-		>=dev-qt/qtcore-5.10:5=
-		>=dev-qt/qtdbus-5.10:5=
-	)
 	qt6? (
 		>=dev-qt/qtbase-6.2:6=[dbus]
 	)
