@@ -44,12 +44,6 @@ src_configure() {
 	if use qt6; then
 		mycmakeargs+=(
 			-DQT_VERSION_MAJOR=6
-			-DBUILD_WITH_QT6=ON
-		)
-	elif use qt5; then
-		mycmakeargs+=(
-			-DQT_VERSION_MAJOR=5
-			-DBUILD_WITH_QT6=OFF
 		)
 	fi
 
