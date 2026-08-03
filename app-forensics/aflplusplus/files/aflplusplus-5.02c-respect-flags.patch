@@ -1,0 +1,148 @@
+From fd0a396210217fe1faab2eb947a24ffc99ccb005 Mon Sep 17 00:00:00 2001
+From: rebase <a@b.c>
+Date: Mon, 3 Aug 2026 16:36:26 +0300
+Subject: [PATCH] Respect flags
+
+---
+ GNUmakefile                                     | 4 ++--
+ GNUmakefile.gcc_plugin                          | 6 +++---
+ custom_mutators/honggfuzz/Makefile              | 3 ++-
+ custom_mutators/libfuzzer/Makefile              | 4 ++--
+ frida_mode/GNUmakefile                          | 1 -
+ frida_mode/test/png/persistent/hook/GNUmakefile | 6 ++----
+ utils/aflpp_driver/GNUmakefile                  | 7 ++++---
+ 7 files changed, 15 insertions(+), 16 deletions(-)
+
+diff --git a/GNUmakefile b/GNUmakefile
+index f2031d5..5fff288 100644
+--- a/GNUmakefile
++++ b/GNUmakefile
+@@ -489,7 +489,7 @@ ready:
+ 	@echo "[+] Everything seems to be working, ready to compile. ($(shell $(CC) --version 2>&1|head -n 1))"
+ 
+ src/afl-performance.o: $(COMM_HDR) src/afl-performance.c
+-	$(CC) $(CFLAGS) $(CFLAGS_FLTO) $(CFLAGS_OPT) $(SPECIAL_PERFORMANCE) -Iinclude -c src/afl-performance.c -o src/afl-performance.o
++	$(CC) $(CFLAGS) $(SPECIAL_PERFORMANCE) -Iinclude -c src/afl-performance.c -o src/afl-performance.o
+ 
+ src/afl-common.o: $(COMM_HDR) src/afl-common.c include/envs.h
+ 	$(CC) $(CFLAGS) $(CFLAGS_FLTO) $(SPECIAL_PERFORMANCE) -c src/afl-common.c -o src/afl-common.o
+@@ -662,7 +662,7 @@ code-format:
+ ifndef AFL_NO_X86
+ test_build: afl-cc afl-showmap
+ 	@echo "[*] Testing the CC wrapper afl-cc and its instrumentation output..."
+-	@unset AFL_MAP_SIZE AFL_USE_UBSAN AFL_USE_CFISAN AFL_USE_LSAN AFL_USE_ASAN AFL_USE_MSAN AFL_LLVM_ALLOWLIST AFL_LLVM_DENYLIST; ASAN_OPTIONS=detect_leaks=0 AFL_INST_RATIO=100 AFL_PATH=. ./afl-cc test-instr.c $(LDFLAGS) -o test-instr 2>&1 || (echo "Oops, afl-cc failed"; exit 1 )
++	@unset AFL_MAP_SIZE AFL_USE_UBSAN AFL_USE_CFISAN AFL_USE_LSAN AFL_USE_ASAN AFL_USE_MSAN AFL_LLVM_ALLOWLIST AFL_LLVM_DENYLIST; ASAN_OPTIONS=detect_leaks=0 AFL_INST_RATIO=100 AFL_PATH=. ./afl-cc test-instr.c -o test-instr 2>&1 || (echo "Oops, afl-cc failed"; exit 1 )
+ 	-ASAN_OPTIONS=detect_leaks=0 ./afl-showmap -q -m none -o .test-instr0 ./test-instr < /dev/null
+ 	-echo 1 | ASAN_OPTIONS=detect_leaks=0 ./afl-showmap -m none -q -o .test-instr1 ./test-instr
+ 	@rm -f test-instr
+diff --git a/GNUmakefile.gcc_plugin b/GNUmakefile.gcc_plugin
+index 8c0bc59..c4aad01 100644
+--- a/GNUmakefile.gcc_plugin
++++ b/GNUmakefile.gcc_plugin
+@@ -142,15 +142,15 @@ afl-common.o: ./src/afl-common.c
+ 	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@ $(LDFLAGS)
+ 
+ ./afl-compiler-rt.o: instrumentation/afl-compiler-rt.o.c
+-	$(CC) $(CFLAGS_SAFE) $(CPPFLAGS) $(COMPILER_RT_LDFLAGS) -O3 -Wno-unused-result -fPIC -c $< -o $@
++	$(CC) $(CFLAGS) $(CFLAGS_SAFE) $(CPPFLAGS) $(COMPILER_RT_LDFLAGS) -Wno-unused-result -fPIC -fno-lto -c $< -o $@
+ 
+ ./afl-compiler-rt-32.o: instrumentation/afl-compiler-rt.o.c
+ 	@printf "[*] Building 32-bit variant of the runtime (-m32)... "
+-	@$(CC) $(CFLAGS_SAFE) $(CPPFLAGS) $(COMPILER_RT_LDFLAGS) -O3 -Wno-unused-result -m32 -fPIC -c $< -o $@ 2>/dev/null; if [ "$$?" = "0" ]; then echo "success!"; else echo "failed (that's fine)"; fi
++	@$(CC) $(CFLAGS) $(CFLAGS_SAFE) $(CPPFLAGS) $(COMPILER_RT_LDFLAGS) -Wno-unused-result -m32 -fPIC -fno-lto -c $< -o $@ 2>/dev/null; if [ "$$?" = "0" ]; then echo "success!"; else echo "failed (that's fine)"; fi
+ 
+ ./afl-compiler-rt-64.o: instrumentation/afl-compiler-rt.o.c
+ 	@printf "[*] Building 64-bit variant of the runtime (-m64)... "
+-	@$(CC) $(CFLAGS_SAFE) $(CPPFLAGS) $(COMPILER_RT_LDFLAGS) -O3 -Wno-unused-result -m64 -fPIC -c $< -o $@ 2>/dev/null; if [ "$$?" = "0" ]; then echo "success!"; else echo "failed (that's fine)"; fi
++	@$(CC) $(CFLAGS) $(CFLAGS_SAFE) $(CPPFLAGS) $(COMPILER_RT_LDFLAGS) -Wno-unused-result -m64 -fPIC -fno-lto -c $< -o $@ 2>/dev/null; if [ "$$?" = "0" ]; then echo "success!"; else echo "failed (that's fine)"; fi
+ 
+ $(PASSES): instrumentation/afl-gcc-common.h
+ 
+diff --git a/custom_mutators/honggfuzz/Makefile b/custom_mutators/honggfuzz/Makefile
+index 5c2fcdd..4a29be9 100644
+--- a/custom_mutators/honggfuzz/Makefile
++++ b/custom_mutators/honggfuzz/Makefile
+@@ -1,5 +1,6 @@
+ 
+-CFLAGS = -O3 -funroll-loops -fPIC -Wl,-Bsymbolic
++CFLAGS ?= -O3
++CFLAGS += -funroll-loops -fPIC -Wl,-Bsymbolic
+ 
+ all: honggfuzz-mutator.so
+ 
+diff --git a/custom_mutators/libfuzzer/Makefile b/custom_mutators/libfuzzer/Makefile
+index 51263b8..2d4be47 100644
+--- a/custom_mutators/libfuzzer/Makefile
++++ b/custom_mutators/libfuzzer/Makefile
+@@ -1,6 +1,6 @@
+ 
+-CFLAGS = -g -O3 -funroll-loops -fPIC -fpermissive -std=c++11
+-#CFLAGS = -g -O0 -fPIC -fpermissive -std=c++11
++CFLAGS ?= -g -O3
++CFLAGS += -funroll-loops -fpermissive -std=c++11 -fPIC
+ CXX ?= clang++
+ 
+ ifdef INTROSPECTION
+diff --git a/frida_mode/GNUmakefile b/frida_mode/GNUmakefile
+index 90bb3fd..6f6315c 100644
+--- a/frida_mode/GNUmakefile
++++ b/frida_mode/GNUmakefile
+@@ -33,7 +33,6 @@ CFLAGS+=-fPIC \
+ 		-D_GNU_SOURCE \
+ 		-D_FORTIFY_SOURCE=2 \
+ 		-g \
+-		-O3 \
+ 		-funroll-loops \
+ 		-ffunction-sections \
+ 
+diff --git a/frida_mode/test/png/persistent/hook/GNUmakefile b/frida_mode/test/png/persistent/hook/GNUmakefile
+index f3d06c8..d162be2 100644
+--- a/frida_mode/test/png/persistent/hook/GNUmakefile
++++ b/frida_mode/test/png/persistent/hook/GNUmakefile
+@@ -5,11 +5,9 @@ BUILD_DIR:=$(PWD)build/
+ AFLPP_FRIDA_DRIVER_HOOK_OBJ=$(ROOT)frida_mode/build/frida_hook.so
+ AFLPP_QEMU_DRIVER_HOOK_OBJ=$(ROOT)frida_mode/build/qemu_hook.so
+ 
+-CFLAGS+=-O3 \
+-		-funroll-loops \
++CFLAGS+= -funroll-loops \
+ 		-g \
+-		-fPIC \
+-		-funroll-loops \
++		-fPIC
+ 
+ LDFLAGS+=-shared \
+ 
+diff --git a/utils/aflpp_driver/GNUmakefile b/utils/aflpp_driver/GNUmakefile
+index 3c8c637..8a5b555 100644
+--- a/utils/aflpp_driver/GNUmakefile
++++ b/utils/aflpp_driver/GNUmakefile
+@@ -18,8 +18,9 @@ ifneq "" "$(LLVM_BINDIR)"
+   endif
+ endif
+ 
+-CFLAGS := -O3 -funroll-loops -g -fPIC -fno-lto
+ AR ?= ar
++CFLAGS ?= -O3 -funroll-loops -g
++CFLAGS += -fPIC -fno-lto
+ 
+ ifdef IOS_SDK_PATH
+   CFLAGS += -isysroot $(IOS_SDK_PATH)
+@@ -28,7 +29,7 @@ endif
+ all:	libAFLDriver.a libAFLQemuDriver.a aflpp_qemu_driver_hook.so
+ 
+ aflpp_driver.o:	aflpp_driver.c
+-	-$(CC) -I. -I../../include $(CFLAGS) -c aflpp_driver.c
++	-$(CC) $(CPPFLAGS) -I. -I../../include $(CFLAGS) -c aflpp_driver.c
+ 
+ libAFLDriver.a:	aflpp_driver.o
+ 	@$(AR) rc libAFLDriver.a aflpp_driver.o
+@@ -56,7 +57,7 @@ aflpp_qemu_driver_hook.o:	aflpp_qemu_driver_hook.c
+ 
+ test:	debug
+ 	#clang -S -emit-llvm -D_DEBUG=\"1\" -I../../include -Wl,--allow-multiple-definition -funroll-loops -o aflpp_driver_test.ll aflpp_driver_test.c
+-	afl-clang-fast -D_DEBUG=\"1\" -I../../include -Wl,--allow-multiple-definition -funroll-loops -o aflpp_driver_test aflpp_driver_test.c libAFLDriver.a afl-performance.o
++	../../afl-clang-fast -D_DEBUG=\"1\" -I../../include -Wl,--allow-multiple-definition -funroll-loops -o aflpp_driver_test aflpp_driver_test.c libAFLDriver.a afl-performance.o
+ 
+ clean:
+ 	rm -f *.o libAFLDriver*.a libAFLQemuDriver.a aflpp_qemu_driver_hook.so *~ core aflpp_driver_test
