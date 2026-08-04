@@ -1,0 +1,17 @@
+BDEPEND=sys-devel/bison sys-devel/flex test? ( dev-lang/perl ) app-alternatives/ninja >=dev-build/cmake-3.28.5
+DEFINED_PHASES=compile configure install prepare setup test
+DEPEND=python_single_target_python3_12? ( dev-lang/python:3.12 ) python_single_target_python3_13? ( dev-lang/python:3.13 ) python_single_target_python3_14? ( dev-lang/python:3.14 ) python_single_target_python3_15? ( dev-lang/python:3.15 ) sci-mathematics/minisat memory-analyzer? ( dev-debug/gdb ) >=sci-mathematics/minisat-2.2.1-r2[static-libs]
+DESCRIPTION=Bounded Model Checker for C and C++ programs
+EAPI=8
+HOMEPAGE=https://www.cprover.org/cbmc/ https://github.com/diffblue/cbmc
+INHERIT=cmake python-single-r1
+IUSE=+memory-analyzer test python_single_target_python3_12 python_single_target_python3_13 python_single_target_python3_14 python_single_target_python3_15
+KEYWORDS=~amd64
+LICENSE=BSD-4
+RDEPEND=python_single_target_python3_12? ( dev-lang/python:3.12 ) python_single_target_python3_13? ( dev-lang/python:3.13 ) python_single_target_python3_14? ( dev-lang/python:3.14 ) python_single_target_python3_15? ( dev-lang/python:3.15 ) sci-mathematics/minisat memory-analyzer? ( dev-debug/gdb )
+REQUIRED_USE=^^ ( python_single_target_python3_12 python_single_target_python3_13 python_single_target_python3_14 python_single_target_python3_15 )
+RESTRICT=!test? ( test )
+SLOT=0
+SRC_URI=https://github.com/diffblue/cbmc/archive/refs/tags/cbmc-6.10.0.tar.gz
+_eclasses_=toolchain-funcs	58a918e3a42d0156f010dcfd43725be5	flag-o-matic	fd3558f73f6503093adee69adf41020d	multiprocessing	45d0620f25c2f063ad6276ecd9ed9399	ninja-utils	d063ea1900a793f93eb095010d6d9156	xdg-utils	42869b3c8d86a70ef3cf75165a395e09	cmake	c54f532543a549f7318d6c49aaf8e953	eapi9-pipestatus	d2c134036ac31c3085aebc9147f572bd	python-utils-r1	5fd9a75ca55021d3276ce969f8e28391	python-single-r1	47d8ac9be330c9366112b78fd4f8ce57
+_md5_=23054730685197b460f8b31e584ef305

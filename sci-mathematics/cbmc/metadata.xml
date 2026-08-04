@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>antiq.hofer@gmail.com</email>
+		<name>Jaeger H</name>
+	</maintainer>
+	<use>
+		<flag name="memory-analyzer">Build memory-analyzer, which snapshots a running process via <pkg>dev-debug/gdb</pkg></flag>
+	</use>
+	<upstream>
+		<remote-id type="github">diffblue/cbmc</remote-id>
+	</upstream>
+</pkgmetadata>

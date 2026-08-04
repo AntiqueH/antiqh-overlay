@@ -1,0 +1,42 @@
+From dfc9cb8fcda856e99617bbfe1b4d3960137b1088 Mon Sep 17 00:00:00 2001
+From: rb <a@b.c>
+Date: Mon, 3 Aug 2026 18:42:32 +0300
+Subject: [PATCH] Optionally build and install the static library
+
+---
+ CMakeLists.txt | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 055a144..0a6f513 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -49,6 +49,16 @@ add_library(minisat-lib-shared SHARED ${MINISAT_LIB_SOURCES})
+ 
+ target_link_libraries(minisat-lib-shared ${ZLIB_LIBRARY})
+ 
++option(BUILD_STATIC_LIBS "Also build and install the static library" OFF)
++if(BUILD_STATIC_LIBS)
++  add_library(minisat-lib-static STATIC ${MINISAT_LIB_SOURCES})
++  target_link_libraries(minisat-lib-static ${ZLIB_LIBRARY})
++  set_target_properties(minisat-lib-static
++    PROPERTIES
++      OUTPUT_NAME "minisat"
++      POSITION_INDEPENDENT_CODE ON)
++endif()
++
+ add_executable(minisat_core minisat/core/Main.cc)
+ add_executable(minisat_simp minisat/simp/Main.cc)
+ 
+@@ -71,6 +81,11 @@ install(TARGETS minisat-lib-shared minisat_core minisat_simp
+         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+ 
++if(BUILD_STATIC_LIBS)
++  install(TARGETS minisat-lib-static
++          ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
++endif()
++
+ install(DIRECTORY minisat/mtl minisat/utils minisat/core minisat/simp
+         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/minisat
+         FILES_MATCHING PATTERN "*.h")
