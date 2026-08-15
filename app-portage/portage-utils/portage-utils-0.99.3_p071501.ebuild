@@ -82,11 +82,6 @@ pkg_setup() {
 	[[ ${MERGE_TYPE} != binary ]] && use openmp && tc-check-openmp
 }
 
-src_prepare() {
-	default
-	eautoreconf
-}
-
 src_configure() {
 	econf \
 		--disable-maintainer-mode \
