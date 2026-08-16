@@ -54,7 +54,7 @@ DEPEND="${RDEPEND}
 		gpg? (
 			app-crypt/gpgme[static-libs]
 			dev-libs/libgpg-error[static-libs]
-			dev-libs/libassuan[static-libs]
+			>=dev-libs/libassuan-3.0.0-r3[static-libs]
 		)
 		gtree? ( app-arch/libarchive[static-libs,zstd] )
 		qmanifest? ( app-crypt/libb2[static-libs] )

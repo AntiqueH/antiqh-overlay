@@ -4,7 +4,7 @@
 EAPI=8
 
 LLVM_COMPAT=( 22 )
-PYTHON_COMPAT=( python3_{11..14} )
+PYTHON_COMPAT=( python3_{11..15} )
 inherit flag-o-matic toolchain-funcs llvm-r2 optfeature python-single-r1
 
 DESCRIPTION="Fork of AFL, the popular compile-time instrumentation fuzzer"
