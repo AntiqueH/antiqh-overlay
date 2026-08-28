@@ -2,5 +2,6 @@ app-admin
 app-crypt
 app-forensics
 app-portage
+dev-util
 kde-plasma
 sci-mathematics

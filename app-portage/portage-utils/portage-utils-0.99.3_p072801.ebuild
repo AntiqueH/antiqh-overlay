@@ -27,7 +27,7 @@ REQUIRED_USE="
 	libxml2? ( static )
 "
 
-RDEPEND="
+COMMON_DEPEND="
 	!static? (
 		app-arch/libarchive:=
 		virtual/zlib:=
@@ -42,7 +42,12 @@ RDEPEND="
 		llvm-runtimes/openmp
 	) )
 "
-DEPEND="${RDEPEND}
+RDEPEND="${COMMON_DEPEND}
+	>=app-arch/tar-1.27
+	gpg? ( >=sys-apps/util-linux-2.42 )
+"
+
+DEPEND="${COMMON_DEPEND}
 	static? (
 		app-arch/bzip2[static-libs]
 		app-arch/xz-utils[static-libs]

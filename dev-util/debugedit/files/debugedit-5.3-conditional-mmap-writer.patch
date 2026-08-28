@@ -1,0 +1,19 @@
+Use the mmap ELF writer only on the build-id path, which never relayouts.
+
+Unconditional ELF_C_RDWR_MMAP (Gentoo bug 980264) leaves section headers stale
+when path rewriting shrinks the debug sections and moves e_shoff, breaking strip.
+
+Gentoo bug: https://bugs.gentoo.org/980264
+elfutils bug: https://sourceware.org/bugzilla/show_bug.cgi?id=34468
+
+--- a/tools/debugedit.c
++++ b/tools/debugedit.c
+@@ -3579,6 +3579,8 @@
+ 
+   if (dest_dir == NULL && (!do_build_id || no_recompute_build_id))
+     elf = elf_begin (fd, ELF_C_READ, NULL);
++  else if (dest_dir == NULL)
++    elf = elf_begin (fd, ELF_C_RDWR_MMAP, NULL);
+   else
+     elf = elf_begin (fd, ELF_C_RDWR, NULL);
+   if (elf == NULL)

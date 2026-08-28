@@ -8,9 +8,9 @@ INHERIT=toolchain-funcs autotools
 IUSE=+gpg +gpkg +gtree openmp +qmanifest static system-libcurl libxml2
 KEYWORDS=~amd64
 LICENSE=GPL-2
-RDEPEND=!static? ( app-arch/libarchive:= virtual/zlib:= system-libcurl? ( net-misc/curl:= ) !system-libcurl? ( dev-libs/openssl:= ) gpg? ( app-crypt/gpgme:= ) gtree? ( app-arch/libarchive:=[zstd] ) qmanifest? ( app-crypt/libb2:= ) ) openmp? ( || ( sys-devel/gcc:*[openmp] llvm-runtimes/openmp ) )
+RDEPEND=!static? ( app-arch/libarchive:= virtual/zlib:= system-libcurl? ( net-misc/curl:= ) !system-libcurl? ( dev-libs/openssl:= ) gpg? ( app-crypt/gpgme:= ) gtree? ( app-arch/libarchive:=[zstd] ) qmanifest? ( app-crypt/libb2:= ) ) openmp? ( || ( sys-devel/gcc:*[openmp] llvm-runtimes/openmp ) ) >=app-arch/tar-1.27 gpg? ( sys-apps/util-linux-2.42.2)
 REQUIRED_USE=qmanifest? ( gpg ) gtree? ( gpg ) libxml2? ( static )
 SLOT=0
-SRC_URI=https://github.com/AntiqueH/portage-utils/archive/refs/tags/0.99.3_p071501.tar.gz -> portage-utils-0.99.3_p071501.tar.gz
-_eclasses_=toolchain-funcs	58a918e3a42d0156f010dcfd43725be5	gnuconfig	b4fa4889c6f586d6b069215a86dd9e53	libtool	6a96cd90e5da8c7c615015479f46f1a4	autotools	0698802996fcfe9a604eac3c1f6e7112
-_md5_=9bfb6de65f28c31bfe0f1295c5125049
+SRC_URI=https://github.com/AntiqueH/portage-utils/archive/refs/tags/0.99.3_p072201.tar.gz -> portage-utils-0.99.3_p072201.tar.gz
+_eclasses_=autotools	0698802996fcfe9a604eac3c1f6e7112	gnuconfig	b4fa4889c6f586d6b069215a86dd9e53	libtool	6a96cd90e5da8c7c615015479f46f1a4	toolchain-funcs	58a918e3a42d0156f010dcfd43725be5
+_md5_=af803abfa495efdc9481810bb26d37c0

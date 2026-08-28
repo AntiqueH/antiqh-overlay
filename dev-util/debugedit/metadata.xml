@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>antiq.hofer@gmail.com</email>
+		<name>Jaeger H</name>
+	</maintainer>
+	<upstream>
+		<bugs-to>https://sourceware.org/bugzilla/</bugs-to>
+	</upstream>
+</pkgmetadata>

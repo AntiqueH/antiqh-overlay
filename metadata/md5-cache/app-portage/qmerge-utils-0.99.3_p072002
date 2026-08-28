@@ -12,5 +12,5 @@ RDEPEND=!static? ( app-arch/libarchive:= virtual/zlib:= system-libcurl? ( net-mi
 REQUIRED_USE=qmanifest? ( gpg ) gtree? ( gpg ) libxml2? ( static )
 SLOT=0
 SRC_URI=https://github.com/AntiqueH/qmerge-utils/archive/refs/tags/0.99.3_p072002.tar.gz -> qmerge-utils-0.99.3_p072002.tar.gz
-_eclasses_=toolchain-funcs	58a918e3a42d0156f010dcfd43725be5	gnuconfig	b4fa4889c6f586d6b069215a86dd9e53	libtool	6a96cd90e5da8c7c615015479f46f1a4	autotools	0698802996fcfe9a604eac3c1f6e7112
+_eclasses_=autotools	0698802996fcfe9a604eac3c1f6e7112	gnuconfig	b4fa4889c6f586d6b069215a86dd9e53	libtool	6a96cd90e5da8c7c615015479f46f1a4	toolchain-funcs	58a918e3a42d0156f010dcfd43725be5
 _md5_=33755d60ab7d216fc276ba5d874a75c2
