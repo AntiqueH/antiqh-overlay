@@ -42,7 +42,7 @@ BDEPEND="
 VERIFY_SIG_OPENPGP_KEY_PATH=/usr/share/openpgp-keys/debugedit.gpg
 
 PATCHES=(
-	"${FILESDIR}/${P}-conditional-mmap-writer.patch"
+	"${FILESDIR}/${P}-flush-section-headers.patch"
 )
 
 src_configure() {

@@ -1,0 +1,42 @@
+Write back every section header on relayout so the mmap ELF writer is safe.
+
+debugedit owns the layout (ELF_F_LAYOUT) and moves e_shoff when path rewriting
+shrinks the debug sections, but only marks resized headers dirty, so the mmap
+writer leaves the rest stale. Flag them all, including section 0 which
+elf_nextscn skips. themn ELF_C_RDWR_MMAP should work everywhere.
+
+Gentoo bug: https://bugs.gentoo.org/980264
+elfutils bug: https://sourceware.org/bugzilla/show_bug.cgi?id=34468
+
+--- a/tools/debugedit.c
++++ b/tools/debugedit.c
+@@ -3580,7 +3580,7 @@
+   if (dest_dir == NULL && (!do_build_id || no_recompute_build_id))
+     elf = elf_begin (fd, ELF_C_READ, NULL);
+   else
+-    elf = elf_begin (fd, ELF_C_RDWR, NULL);
++    elf = elf_begin (fd, ELF_C_RDWR_MMAP, NULL);
+   if (elf == NULL)
+     {
+       error (0, 0, "cannot open ELF file: %s", elf_errmsg (-1));
+@@ -4079,6 +4079,11 @@
+ 	}
+ 
+       /* Now adjust any sizes and offsets for the unallocated sections. */
++      {
++	Elf_Scn *zscn = elf_getscn (elf, 0);
++	if (zscn != NULL)
++	  elf_flagshdr (zscn, ELF_C_SET, ELF_F_DIRTY);
++      }
+       scn = NULL;
+       while ((scn = elf_nextscn (elf, scn)) != NULL)
+ 	{
+@@ -4087,6 +4092,8 @@
+ 	  if (shdr == NULL)
+ 	    error (1, 0, "Couldn't get shdr: %s", elf_errmsg (-1));
+ 
++	  elf_flagshdr (scn, ELF_C_SET, ELF_F_DIRTY);
++
+ 	  /* A bug in elfutils before 0.169 means we have to write out
+ 	     all section data, even when nothing changed.
+ 	     https://sourceware.org/bugzilla/show_bug.cgi?id=21199 */
