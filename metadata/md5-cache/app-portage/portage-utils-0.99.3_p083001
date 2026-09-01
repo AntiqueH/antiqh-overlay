@@ -11,6 +11,6 @@ LICENSE=GPL-2
 RDEPEND=!static? ( app-arch/libarchive:= virtual/zlib:= system-libcurl? ( net-misc/curl:= ) !system-libcurl? ( dev-libs/openssl:= ) gpg? ( app-crypt/gpgme:= ) gtree? ( app-arch/libarchive:=[zstd] ) qmanifest? ( app-crypt/libb2:= ) ) openmp? ( || ( sys-devel/gcc:*[openmp] llvm-runtimes/openmp ) ) >=app-arch/tar-1.27 gpg? ( >=sys-apps/util-linux-2.42 )
 REQUIRED_USE=qmanifest? ( gpg ) gtree? ( gpg ) libxml2? ( static )
 SLOT=0
-SRC_URI=https://github.com/AntiqueH/portage-utils/archive/refs/tags/0.99.3_p072901.tar.gz -> portage-utils-0.99.3_p072901.tar.gz
+SRC_URI=https://github.com/AntiqueH/portage-utils/archive/refs/tags/0.99.3_p083001.tar.gz -> portage-utils-0.99.3_p083001.tar.gz
 _eclasses_=autotools	0698802996fcfe9a604eac3c1f6e7112	gnuconfig	b4fa4889c6f586d6b069215a86dd9e53	libtool	6a96cd90e5da8c7c615015479f46f1a4	toolchain-funcs	58a918e3a42d0156f010dcfd43725be5
 _md5_=0361300fa7d01f70471b38e7ed8e0f71
