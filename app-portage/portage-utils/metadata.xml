@@ -11,6 +11,7 @@
 		<flag name="gtree">Support the gtree binpkg cache</flag>
 		<flag name="qmanifest">Build the qmanifest applet</flag>
 		<flag name="internal-libs">Build the curl source tree in src/curl</flag>
+		<flag name="psl">Clone of net-misc/curl's psl flag. A static build (USE=static) without internal-libs links the system libcurl statically together with everything it was built against so that means psl brings in libpsl, libidn2 and libunistring with static-libs. We do not necessarily need them for portage-utils, by default psl USE is off.</flag>
 		<flag name="libxml2">In static builds (USE=static), use libarchive's libxml2 XML backend, which pulls libxml2 and ICU into the static binary (much larger). When disabled, the static build uses libarchive's small expat backend instead. No effect on non-static builds.</flag>
 	</use>
 	<upstream>
