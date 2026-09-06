@@ -43,8 +43,7 @@ COMMON_DEPEND="
 	) )
 "
 RDEPEND="${COMMON_DEPEND}
-	>=app-arch/tar-1.27
-	gpg? ( >=sys-apps/util-linux-2.42 )
+	gpg? ( sys-apps/util-linux )
 "
 
 DEPEND="${COMMON_DEPEND}
