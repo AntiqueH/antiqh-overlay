@@ -49,7 +49,17 @@ DEPEND="${RDEPEND}
 	static? (
 		app-arch/libarchive[static-libs]
 		virtual/zlib[static-libs]
-		!internal-libs? ( >=net-misc/curl-7.85.0[static-libs] )
+		!internal-libs? (
+			>=net-misc/curl-7.85.0[static-libs]
+			dev-libs/openssl[static-libs]
+			dev-libs/libunistring[static-libs]
+			net-dns/c-ares[static-libs]
+			net-dns/libidn2[static-libs]
+			net-libs/libpsl[static-libs]
+			net-libs/nghttp2[static-libs]
+			net-libs/nghttp3[static-libs]
+			net-libs/ngtcp2[openssl,ssl,static-libs]
+		)
 		internal-libs? ( dev-libs/openssl[static-libs] )
 		gpg? ( app-crypt/gpgme[static-libs] )
 		gtree? ( app-arch/libarchive[static-libs,zstd] )
