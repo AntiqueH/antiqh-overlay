@@ -10,7 +10,7 @@
 		<flag name="gpkg">Support GLEP 78 gpkg binary packages</flag>
 		<flag name="gtree">Support the gtree binpkg cache</flag>
 		<flag name="qmanifest">Build the qmanifest applet</flag>
-		<flag name="system-libcurl">Link against the system libcurl instead of the bundled copy</flag>
+		<flag name="internal-libs">Build the curl source tree in src/curl</flag>
 		<flag name="libxml2">In static builds (USE=static), use libarchive's libxml2 XML backend, which pulls libxml2 and ICU into the static binary (much larger). When disabled, the static build uses libarchive's small expat backend instead. No effect on non-static builds.</flag>
 	</use>
 	<upstream>

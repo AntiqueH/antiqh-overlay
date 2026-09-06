@@ -8,18 +8,22 @@ inherit toolchain-funcs autotools
 DESCRIPTION="Small and fast Portage helper tools written in C (qmerge binhost fork)"
 HOMEPAGE="https://github.com/AntiqueH/portage-utils"
 
+CURL_PV="8.20.0"
+
 if [[ ${PV} == *9999 ]]; then
 	inherit git-r3
 	EGIT_REPO_URI="https://github.com/AntiqueH/${PN}.git"
 	EGIT_BRANCH="dev"
+	SRC_URI="internal-libs? ( https://curl.se/download/curl-${CURL_PV}.tar.xz )"
 else
-	SRC_URI="https://github.com/AntiqueH/${PN}/archive/refs/tags/${PV}.tar.gz -> ${P}.tar.gz"
+	SRC_URI="https://github.com/AntiqueH/${PN}/archive/refs/tags/${PV}.tar.gz -> ${P}.tar.gz
+		internal-libs? ( https://curl.se/download/curl-${CURL_PV}.tar.xz )"
 	KEYWORDS="~amd64"
 fi
 
-LICENSE="GPL-2"
+LICENSE="GPL-2 internal-libs? ( curl )"
 SLOT="0"
-IUSE="+gpg +gpkg +gtree openmp +qmanifest static system-libcurl libxml2"
+IUSE="+gpg +gpkg +gtree internal-libs openmp +qmanifest static libxml2"
 
 REQUIRED_USE="
 	qmanifest? ( gpg )
@@ -31,8 +35,8 @@ COMMON_DEPEND="
 	!static? (
 		app-arch/libarchive:=
 		virtual/zlib:=
-		system-libcurl? ( net-misc/curl:= )
-		!system-libcurl? ( dev-libs/openssl:= )
+		!internal-libs? ( >=net-misc/curl-7.85.0:= )
+		internal-libs? ( dev-libs/openssl:= )
 		gpg? ( app-crypt/gpgme:= )
 		gtree? ( app-arch/libarchive:=[zstd] )
 		qmanifest? ( app-crypt/libb2:= )
@@ -53,8 +57,8 @@ DEPEND="${COMMON_DEPEND}
 		app-arch/zstd[static-libs]
 		sys-apps/acl[static-libs]
 		virtual/zlib[static-libs]
-		system-libcurl? ( net-misc/curl[static-libs] )
-		!system-libcurl? ( dev-libs/openssl[static-libs] )
+		!internal-libs? ( >=net-misc/curl-7.85.0[static-libs] )
+		internal-libs? ( dev-libs/openssl[static-libs] )
 		gpg? (
 			app-crypt/gpgme[static-libs]
 			dev-libs/libgpg-error[static-libs]
@@ -86,6 +90,14 @@ pkg_setup() {
 	[[ ${MERGE_TYPE} != binary ]] && use openmp && tc-check-openmp
 }
 
+src_prepare() {
+	default
+	if use internal-libs && [[ ! -f ${S}/src/curl/configure ]]; then
+		rm -rf "${S}/src/curl" || die
+		mv "${WORKDIR}/curl-${CURL_PV}" "${S}/src/curl" || die
+	fi
+}
+
 src_configure() {
 	econf \
 		--disable-maintainer-mode \
@@ -96,5 +108,5 @@ src_configure() {
 		$(use_enable gtree) \
 		$(use_enable qmanifest) \
 		$(use_enable openmp) \
-		$(use_with system-libcurl)
+		$(use_enable internal-libs)
 }
