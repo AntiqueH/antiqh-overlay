@@ -3,7 +3,7 @@
 
 EAPI=8
 
-inherit flag-o-matic toolchain-funcs autotools
+inherit toolchain-funcs autotools
 
 DESCRIPTION="Small and fast Portage helper tools written in C (qmerge binhost fork)"
 HOMEPAGE="https://github.com/AntiqueH/portage-utils"
@@ -21,17 +21,20 @@ else
 	KEYWORDS="~amd64"
 fi
 
-LICENSE="GPL-2 internal-libs? ( curl )"
+LICENSE="GPL-2
+	internal-libs? ( curl )"
+
 SLOT="0"
-IUSE="+curl +gpg +gpkg +gtree internal-libs openmp psl +qmanifest static"
+IUSE="curl +gpg +gpkg +gtree internal-libs openmp psl +qmanifest static libxml2"
 
 REQUIRED_USE="
 	qmanifest? ( gpg )
 	gtree? ( gpg )
+	libxml2? ( static )
 	internal-libs? ( curl )
 "
 
-RDEPEND="
+COMMON_DEPEND="
 	!static? (
 		app-arch/libarchive:=
 		virtual/zlib:=
@@ -48,9 +51,16 @@ RDEPEND="
 		llvm-runtimes/openmp
 	) )
 "
-DEPEND="${RDEPEND}
+RDEPEND="${COMMON_DEPEND}
+	gpg? ( sys-apps/util-linux )
+"
+
+DEPEND="${COMMON_DEPEND}
 	static? (
-		app-arch/libarchive[static-libs]
+		app-arch/bzip2[static-libs]
+		app-arch/xz-utils[static-libs]
+		app-arch/zstd[static-libs]
+		sys-apps/acl[static-libs]
 		virtual/zlib[static-libs]
 		curl? (
 			!internal-libs? (
@@ -68,9 +78,22 @@ DEPEND="${RDEPEND}
 			)
 			internal-libs? ( dev-libs/openssl[static-libs] )
 		)
-		gpg? ( app-crypt/gpgme[static-libs] )
+		gpg? (
+			app-crypt/gpgme[static-libs]
+			dev-libs/libgpg-error[static-libs]
+			>=dev-libs/libassuan-3.0.0-r3[static-libs]
+		)
 		gtree? ( app-arch/libarchive[static-libs,zstd] )
 		qmanifest? ( app-crypt/libb2[static-libs] )
+		!libxml2? (
+			app-arch/libarchive[static-libs,expat]
+			dev-libs/expat[static-libs]
+		)
+		libxml2? (
+			app-arch/libarchive[static-libs,-expat]
+			dev-libs/libxml2[static-libs]
+			dev-libs/icu[static-libs]
+		)
 	)
 "
 BDEPEND="virtual/pkgconfig"
@@ -101,9 +124,9 @@ src_prepare() {
 	default
 	if use internal-libs && [[ ! -f ${S}/src/curl/configure ]]; then
 		rm -rf "${S}/src/curl" || die
+		mkdir -p "${S}/src" || die
 		mv "${WORKDIR}/curl-${CURL_PV}" "${S}/src/curl" || die
 	fi
-	eautoreconf
 }
 
 src_configure() {
