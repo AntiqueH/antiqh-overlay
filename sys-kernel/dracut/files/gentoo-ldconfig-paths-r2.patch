@@ -1,0 +1,35 @@
+From: Alexander Tsoy <alexander@tsoy.me>
+Subject: [PATCH] Remove redundant gcc paths in ldconfig_paths()
+
+Rebased onto dracut-ng post-112, where ldconfig_paths() moved and the
+trailing "sort | uniq" became "sort -u".
+
+Bug: https://bugs.gentoo.org/705728
+---
+ dracut-functions.sh | 15 ++++++++++++++-
+ 1 file changed, 14 insertions(+), 1 deletion(-)
+
+--- a/dracut-functions.sh
++++ b/dracut-functions.sh
+@@ -101,7 +101,20 @@
+ }
+
+ ldconfig_paths() {
+-    $DRACUT_LDCONFIG ${dracutsysrootdir:+-r ${dracutsysrootdir} -f /etc/ld.so.conf} -pN 2> /dev/null | grep -E -v '/(lib|lib64|usr/lib|usr/lib64)/[^/]*$' | sed -n 's,.* => \(.*\)/.*,\1,p' | sort -u
++    local gccpath line
++
++    if type -P gcc-config &> /dev/null; then
++        gccpath=$(gcc-config -c)
++        gccpath=/usr/lib/gcc/${gccpath%-*}/${gccpath##*-}
++    fi
++
++    while read -r line; do
++        if [[ ${line} != /usr/lib/gcc/* || -z ${gccpath} ]]; then
++            echo "${line}"
++        elif [[ ${line} == "${gccpath}" ]]; then
++            echo "${line}"
++        fi
++    done < <($DRACUT_LDCONFIG ${dracutsysrootdir:+-r ${dracutsysrootdir} -f /etc/ld.so.conf} -pN 2> /dev/null | grep -E -v '/(lib|lib64|usr/lib|usr/lib64)/[^/]*$' | sed -n 's,.* => \(.*\)/.*,\1,p' | sort -u)
+ }
+
+ # Version comparison function.  Assumes Linux style version scheme.
