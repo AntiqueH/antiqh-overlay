@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>0times@anon/email>
+		<name>0times</name>
+	</maintainer>
+	<longdescription lang="en">
+		WinBoat runs a Windows virtual machine inside a container and exposes
+		the guest's applications as regular windows on the Linux desktop via
+		FreeRDP RemoteApp, alongside filesystem and USB device sharing.
+	</longdescription>
+	<use>
+		<flag name="docker">
+			Use <pkg>app-containers/docker</pkg> as the container runtime.
+		</flag>
+		<flag name="podman">
+			Use <pkg>app-containers/podman</pkg> as the container runtime.
+			Note that USB passthrough is not supported on Podman.
+		</flag>
+		<flag name="smartcard">
+			Build against <pkg>net-misc/freerdp</pkg> with smartcard support,
+			allowing host smartcards to be shared with the Windows guest.
+		</flag>
+	</use>
+	<upstream>
+		<remote-id type="github">TibixDev/winboat</remote-id>
+		<bugs-to>https://github.com/TibixDev/winboat/issues</bugs-to>
+	</upstream>
+</pkgmetadata>

@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Name=WinBoat
+Comment=Windows for Penguins
+Comment[ru]=Запуск приложений Windows в Linux с бесшовной интеграцией
+Exec=winboat %U
+Icon=winboat
+Terminal=false
+StartupNotify=true
+StartupWMClass=winboat
+Categories=Utility;
+Keywords=windows;vm;virtual machine;virtualization;rdp;freerdp;remoteapp;docker;kvm;apps;
+Keywords[ru]=windows;vm;rdp;freerdp;docker;kvm;виртуальная машина;виртуализация;приложения windows;программы;
