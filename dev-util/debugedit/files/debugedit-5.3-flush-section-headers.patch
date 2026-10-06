@@ -1,25 +1,36 @@
-Write back every section header on relayout so the mmap ELF writer is safe.
+Use the mmap ELF writer only for build-id edits (it breaks -b/-d when
+the file grows) and write back every section header so patchelf'd
+files stay valid.
 
 debugedit owns the layout (ELF_F_LAYOUT) and moves e_shoff when path rewriting
 shrinks the debug sections, but only marks resized headers dirty, so the mmap
 writer leaves the rest stale. Flag them all, including section 0 which
 elf_nextscn skips. themn ELF_C_RDWR_MMAP should work everywhere.
 
+Original patch by Jaeger Hofer <antiq.hofer@gmail.com>: switch
+to ELF_C_RDWR_MMAP and mark section 0 and every section header dirty.
+Changed by Sebastien Bacher (Ubuntu): use ELF_C_RDWR_MMAP only
+without -b/-d, keep ELF_C_RDWR otherwise.
+
 Gentoo bug: https://bugs.gentoo.org/980264
+Ubuntu bug: https://bugs.launchpad.net/ubuntu/+source/elfutils/+bug/2169676
 elfutils bug: https://sourceware.org/bugzilla/show_bug.cgi?id=34468
 
 --- a/tools/debugedit.c
 +++ b/tools/debugedit.c
-@@ -3580,7 +3580,7 @@
+@@ -3580,7 +3580,10 @@
    if (dest_dir == NULL && (!do_build_id || no_recompute_build_id))
      elf = elf_begin (fd, ELF_C_READ, NULL);
    else
 -    elf = elf_begin (fd, ELF_C_RDWR, NULL);
-+    elf = elf_begin (fd, ELF_C_RDWR_MMAP, NULL);
++    /* Sebastien Bacher (Ubuntu): mmap writer only for build-id-only edits,
++       see elfutils #34468; debug path rewriting (-b/-d) still needs the
++       read/write writer. */
++    elf = elf_begin (fd, dest_dir == NULL ? ELF_C_RDWR_MMAP : ELF_C_RDWR, NULL);
    if (elf == NULL)
      {
        error (0, 0, "cannot open ELF file: %s", elf_errmsg (-1));
-@@ -4079,6 +4079,11 @@
+@@ -4079,6 +4082,11 @@
  	}
  
        /* Now adjust any sizes and offsets for the unallocated sections. */
@@ -31,7 +42,7 @@ elfutils bug: https://sourceware.org/bugzilla/show_bug.cgi?id=34468
        scn = NULL;
        while ((scn = elf_nextscn (elf, scn)) != NULL)
  	{
-@@ -4087,6 +4092,8 @@
+@@ -4087,6 +4095,8 @@
  	  if (shdr == NULL)
  	    error (1, 0, "Couldn't get shdr: %s", elf_errmsg (-1));
  
