@@ -8,7 +8,7 @@ inherit toolchain-funcs autotools
 DESCRIPTION="Small and fast Portage helper tools written in C (qmerge binhost fork)"
 HOMEPAGE="https://github.com/AntiqueH/portage-utils"
 
-CURL_PV="8.20.0"
+CURL_PV="8.22.0"
 
 if [[ ${PV} == *9999 ]]; then
 	inherit git-r3
